@@ -1,0 +1,8 @@
+.idea/
+__pycache__/
+maze_utilities.py
+optimal_control.py
+venv/
+maze_utilities.pyc
+optimal_control.pyc
+

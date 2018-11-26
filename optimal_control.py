@@ -141,6 +141,7 @@ if __name__ == '__main__':
 
     T = 15
 
+
     b_opt = BellmansOptimizer(p1, our_maze, player_actions, beast_actions, T)
     print(b_opt.maze.goal_state.x)
     print(b_opt.maze.goal_state.y)
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     print('COMPUTATION TIME: ')
     print(end - start)
 
-    state = (0,0,4,4)
+    state = (0, 0, 4, 4)
     policies = p1.policies[state]
 
     print('Optimal policy for the state: ', str(state))
@@ -159,7 +160,7 @@ if __name__ == '__main__':
     my_game = MazeGame(player=p1, beast=b1, maze=our_maze)
     print("Player policies computed.")
     print("Starting the game")
-    for j in range(10):
+    for j in range(0):
         print('**********************************************')
         print('final game: '+str(j))
         del my_game

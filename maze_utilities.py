@@ -33,9 +33,6 @@ class MazePlayer(MazeAgent):
     def collect_reward(self):
         pass
 
-    def init_policy(self):
-        pass
-
     def update_policy(self):
         pass
 
@@ -202,6 +199,7 @@ class MazeSimulation():
         self.player.update_state(player_action)
         self.beast.update_state(beast_action)
         self.simulation_time +=1
+
 
 class MazeGame():
     def __init__(self, player, beast, maze):

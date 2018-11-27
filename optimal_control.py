@@ -115,9 +115,6 @@ def compute_reward(t, maze, beast_state, player_state, action, final):
     return 0
 
 
-
-
-
 if __name__ == '__main__':
     goal_state = MazeState(4, 4)
     our_maze = Maze(6, 5, goal_state)

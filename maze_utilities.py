@@ -19,16 +19,22 @@ class MazeAgent:
     def update_state(self, action):
         self.state.update(action)
 
+    @abstractmethod
+    def choose_action(self):
+        pass
+
 
 class MazePlayer(MazeAgent):
-
-    def choose_action(self, beast_state, time_step):
+    def choose_action(self, beast_state, time_step, action):
         x_p = self.state.x
         y_p = self.state.y
         x_b = beast_state.x
         y_b = beast_state.y
-        policy = self.policies[(x_p, y_p, x_b, y_b)]
-        return policy[-(time_step+1)][0]
+        if action is not None:
+            policy = self.policies[(x_p, y_p, x_b, y_b)]
+            return policy[-(time_step+1)][0]
+        else:
+            return action
 
     def collect_reward(self):
         pass
@@ -176,29 +182,42 @@ class MazeState:
         if action == 'left':
             self.x -= 1
 
-class MazeSimulation():
-    def __init__(self, player_init_state, beast_init_state, maze):
-        self.player = MazePlayer(player_init_state, maze)
-        self.beast = MazeBeast(beast_init_state, maze)
+
+class QMazeSimulation():
+    def __init__(self,  maze, player=None, beast=None):
+        self.player = player
+        self.beast = beast
         self.maze = maze
         self.simulation_time = 0
 
     def get_player_action(self, action=None):
-        if action == None:
+        if action is None:
             action = self.player.choose_action()
         return action
 
     def get_beast_action(self, action=None):
-        if action == None:
+        if action is None:
             action = self.beast.choose_action()
         return action
 
     def step_simulation(self):
-        player_action = self.get_player_action()
-        beast_action = self.get_beast_action()
-        self.player.update_state(player_action)
-        self.beast.update_state(beast_action)
-        self.simulation_time +=1
+        assert self.player is not None,  "You have to initialize the player in the simulations. No simulation possible"
+        assert self.beast is not None,  "You have to initialize the police in the simulations. No simulation possible"
+
+        player_action_feasible = False
+        while not player_action_feasible:
+                p_action = self.get_player_action()
+                player_action_feasible = self.maze.check_beast_action(action=p_action, state=self.player.state)
+
+        beast_action_feasible = False
+        while not beast_action_feasible:
+            b_action = self.get_beast_action()
+            beast_action_feasible = self.maze.check_beast_action(action=b_action, state=self.beast.state)
+
+        self.player.update_state(p_action)
+        self.beast.update_state(b_action)
+        self.simulation_time += 1
+        return p_action, b_action
 
 
 class MazeGame():
@@ -214,14 +233,14 @@ class MazeGame():
         beast_action_feasible = False
         while not beast_action_feasible:
             b_action = self.beast.choose_action()
-            beast_action_feasible=self.maze.check_beast_action(action=b_action, state=self.beast.state)
+            beast_action_feasible = self.maze.check_beast_action(action=b_action, state=self.beast.state)
         if self.player.state.x == self.beast.state.x and self.player.state.y == self.beast.state.y:
             b_action = 'stay'
             p_action = 'stay'
 
         self.player.update_state(p_action)
         self.beast.update_state(b_action)
-        self.sim_time +=1
+        self.sim_time += 1
 
     def plot_game(self):
         print('Map at step: '+str(self.sim_time))
